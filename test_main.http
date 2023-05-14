@@ -1,8 +1,15 @@
 # Test your FastAPI endpoints
 
-GET http://127.0.0.1:8000/get_book/by_id/get_name?id=24234
+GET http://127.0.0.1:8000/get_book_information?book_id=2152
 Accept: application/json
 
 ###
 
+GET http://127.0.0.1:8000/get_book_chapter_list?book_id=2152
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/get_book_chapter_content?book_id=2152&chapter_id=77905
+Accept: application/json
 
