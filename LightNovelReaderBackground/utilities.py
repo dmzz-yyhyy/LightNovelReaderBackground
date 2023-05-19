@@ -1,14 +1,17 @@
 from typing import Dict
 
 import cfscrape
-import lxml
 from bs4 import BeautifulSoup
+
 from constant import *
 
 
 def get_soup(url: str) -> BeautifulSoup:
     scraper = cfscrape.create_scraper()
-    res = scraper.get(url, headers=REQUESTS_HEADERS)
+    if REQUESTS_PROXIES is None:
+        res = scraper.get(url, headers=REQUESTS_HEADERS)
+    else:
+        res = scraper.get(url, headers=REQUESTS_HEADERS, proxies=REQUESTS_PROXIES)
     res.encoding = 'gbk'
     data = res.text
     soup = BeautifulSoup(data, 'lxml')

@@ -1,6 +1,6 @@
 from typing import Dict, Optional, Union, List, Any
 
-from LightNovelReaderBackground import *
+import utilities
 from constant import *
 
 
