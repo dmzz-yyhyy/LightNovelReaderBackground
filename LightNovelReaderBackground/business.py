@@ -17,8 +17,8 @@ def get_book_information(book_id: int) -> Dict[str, str]:
         'data': {
             'bookID': book_id,
             'bookName': book_name,
-            'BookCoverURL': book_cover_url,
-            'BookIntroduction': book_introduction
+            'bookCoverURL': book_cover_url,
+            'bookIntroduction': book_introduction
         }
     }
     return data
@@ -27,7 +27,12 @@ def get_book_information(book_id: int) -> Dict[str, str]:
 def get_book_chapter_list(book_id: int) -> Union[
     Dict[str, Optional[str]], Dict[str, List[Dict[str, Union[List[Any], str]]]], Dict[str, Optional[str]], Dict[
         str, Dict[str, str]]]:
-    book_url = utilities.format(BOOK_CHAPTERS_LIST_URL, {'book_id': book_id})
+    book_url = utilities.format(BOOK_URL, {'book_id': book_id})
+    soup = utilities.get_soup(book_url)
+    if soup.select_one(BOOK_NOT_FOUND_SELECTOR) is not None:
+        if soup.select_one(BOOK_NOT_FOUND_SELECTOR).text.find(BOOK_NOT_FOUND_KEY_WORD) != -1:
+            return {'data': None, 'error': 'book not found'}
+    book_url = soup.select_one(BOOK_CHAPTERS_MENU).get('href')
     soup = utilities.get_soup(book_url)
     if soup.select_one(BOOK_CHAPTERS_LIST_NOT_FOUND_SELECTOR) is not None:
         if soup.select_one(BOOK_CHAPTERS_LIST_NOT_FOUND_SELECTOR).text.find(
