@@ -99,6 +99,15 @@ class GetProxiesThread(Thread):
             self.proxies_list = self.kxdaili1()
             self.proxies_list += self.kxdaili2(len(self.proxies_list))
             if self.proxies_list != []:
+                local_proxies_list = []
+                with open("proxies.json", "r") as file:
+                    local_proxies_dict = json.loads(file.read())
+                    local_proxies_list = local_proxies_dict['proxies']
+                if len(local_proxies_list) > 30:
+                    local_proxies_list = local_proxies_list[-20:]
+                    local_proxies_dict['index'] = 19
+                local_proxies_list = local_proxies_list + self.proxies_list
                 with open("proxies.json", "w") as file:
-                    file.write(json.dumps(self.proxies_list, indent=2))
+                    local_proxies_dict['proxies'] = local_proxies_list
+                    file.write(json.dumps(local_proxies_dict, indent=2))
             time.sleep(3)

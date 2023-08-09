@@ -32,9 +32,13 @@ class Cache(Thread):
                     except:
                         self.cache = {}
                 if self.cache != {}:
+                    keys = []
                     for key in self.cache:
-                        if is_time_over(self.cache[key][1], 240):
+                        keys.append(key)
+                    for key in keys:
+                        if is_time_over(self.cache[key][1], 300):
                             self.cache.pop(key)
+                            print("data have deleted")
                     with open("cache.json", "w") as file:
                         file.write(json.dumps(self.cache))
             time.sleep(60)

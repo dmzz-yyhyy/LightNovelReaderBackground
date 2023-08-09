@@ -1,4 +1,7 @@
+import re
+import time
 from typing import Dict, Optional, Union, List, Any
+from urllib.parse import quote
 
 import utilities
 from constant import *
@@ -72,4 +75,53 @@ def get_book_chapter_content(book_id: int, chapter_id) -> Dict[str, Optional[str
             'content': content
         }
     }
+    return data
+
+
+def search_book(search_type: str, book_name: str):
+    search_url = utilities.format(SEARCH_BOOK_URL,
+                                  {'search_type': search_type, 'book_name': quote(book_name, encoding='gbk'),
+                                   'page': 1})
+    soup = utilities.get_soup(search_url)
+    book_list_page_number = soup.select_one(SEARCH_BOOK_PAGE_NUMBER_SELECTOR).text
+    data = {
+        'data': {
+            'searchBookList': []
+        }
+    }
+    if book_list_page_number is None:
+        return data
+    book_list = []
+    for i in range(int(book_list_page_number)):
+        search_url = utilities.format(SEARCH_BOOK_URL,
+                                      {'search_type': search_type, 'book_name': quote(book_name, encoding='gbk'),
+                                       'page': book_list_page_number})
+        is_get_succeed = False
+        while not is_get_succeed:
+            soup = utilities.get_soup(search_url, is_use_proxies=True)
+            if soup.select_one(SEARCH_BOOK_TOO_FAST_SELECTOR).text.find(SEARCH_BOOK_TOO_FAST_KEY_WORD) == -1:
+                is_get_succeed = True
+            time.sleep(3)
+        book_list_temp = soup.select(SEARCH_BOOK_SELECTOR)
+
+        for book in book_list_temp:
+            book_id = re.search(SEARCH_BOOK_ID_REGEX, book.select_one(SEARCH_BOOK_ID_SELECTOR).get('href')).group()
+            title = book.select_one(SEARCH_BOOK_TITLE_SELECTOR).text
+            cover_url = book.select_one(SEARCH_BOOK_COVER_URL_SELECTOR).get('src')
+            writer_and_type = book.select_one(SEARCH_BOOK_WRITER_AND_TYPE_SELECTOR).text
+            writer_and_type = writer_and_type.split("/")
+            writer = writer_and_type[0].split(":")[1]
+            book_type = writer_and_type[1].split(":")[1]
+            tags = book.select_one(SEARCH_BOOK_TAGS_SELECTOR).text.split(":", 1)[0].split(" ")
+            introduction = book.select_one(SEARCH_BOOK_INTRODUCTION_SELECTOR).text.split(":", 1)[1]
+            book_list.append({
+                'bookId': book_id,
+                'title': title,
+                'coverUrl': cover_url,
+                'writer': writer,
+                'type': book_type,
+                'tags': tags,
+                'introduction': introduction
+            })
+    data['data']['searchBookList'] = book_list
     return data

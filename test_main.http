@@ -1,15 +1,23 @@
 # Test your FastAPI endpoints
 
-GET http://127.0.0.1:8000/get_book_information?book_id=2152
+GET http://0.0.0.0:8000/get_book_information?book_id=2152
 Accept: application/json
+
+<> 2023-07-19T005020.500.txt
 
 ###
 
-GET http://127.0.0.1:8000/get_book_chapter_list?book_id=2152
+GET http://0.0.0.0:8000/get_book_chapter_list?book_id=3287
 Accept: application/json
+
+<> 2023-07-19T005120.200.json
+<> 2023-07-19T005023.500.txt
 
 ###
 
-GET http://127.0.0.1:8000/get_book_chapter_content?book_id=2152&chapter_id=77905
+GET http://0.0.0.0:8000/get_book_chapter_content?book_id=2152&chapter_id=77905
 Accept: application/json
 
+###
+GET http://0.0.0.0:8000//search_book?search_type=articlename&book_name=魔王
+Accept: application/json

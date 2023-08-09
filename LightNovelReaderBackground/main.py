@@ -49,6 +49,16 @@ async def get_book_chapter_content(book_id: int, chapter_id: int):
     return data
 
 
+@app.get('/search_book')
+async def search_book(search_type: str, book_name: str):
+    uid = str(search_type) + "_" + str(book_name) + "SB"
+    data = cache.get(uid)
+    if data is None:
+        cache.save(uid, business.search_book(search_type, book_name))
+        data = cache.get(uid)
+    return data
+
+
 if __name__ == "__main__":
     import uvicorn
 
